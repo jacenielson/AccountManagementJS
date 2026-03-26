@@ -2,6 +2,19 @@ import { GetCurrentUser, SetCurrentUser } from "./domain.js";
 
 console.log("running js");
 
+const setUserInQueryString = () => {
+  const user = GetCurrentUser();
+  const url = new URL(window.location);
+  url.searchParams.set("name", user);
+  history.pushState(null, "", url);
+};
+
+const loginUserFromQueryString = () => {
+    const url = new URL(window.location);
+    const currentUser = url.searchParams.get("name") ?? "";
+    SetCurrentUser(currentUser);
+}
+
 const renderLoginForm = () => {
   const formElement = document.createElement("form");
   const nameLabelElement = document.createElement("label");
@@ -18,6 +31,7 @@ const renderLoginForm = () => {
     event.preventDefault();
     console.log(nameInputElement.value);
     SetCurrentUser(nameInputElement.value);
+    setUserInQueryString();
     renderWholePage();
   });
 
@@ -26,28 +40,32 @@ const renderLoginForm = () => {
 };
 
 const renderAuthenticatedPage = () => {
-const containerElement = document.getElementById("pageContentContainer");
-containerElement.replaceChildren();
-containerElement.textContent = "something else";
+  const username = GetCurrentUser();
+  const containerElement = document.getElementById("pageContentContainer");
+  containerElement.replaceChildren();
+  containerElement.textContent = `hello ${username}`;
 
-const logoutButtonElement = document.createElement("button");
-logoutButtonElement.textContent = "Log Out"
-containerElement.append(logoutButtonElement);
+  const brElement = document.createElement("br");
 
-logoutButtonElement.addEventListener("click", () => {
+  const logoutButtonElement = document.createElement("button");
+  logoutButtonElement.textContent = "Log Out";
+  containerElement.append(brElement, logoutButtonElement);
+
+  logoutButtonElement.addEventListener("click", () => {
     SetCurrentUser("");
+    setUserInQueryString();
     renderWholePage();
-})
-}
+  });
+};
 
 const renderWholePage = () => {
-    const user = GetCurrentUser();
-    if(!user) {
-        renderLoginForm();
-    }else{
-        renderAuthenticatedPage();
-    }
-}
+  const user = GetCurrentUser();
+  if (!user) {
+    renderLoginForm();
+  } else {
+    renderAuthenticatedPage();
+  }
+};
 
+loginUserFromQueryString();
 renderWholePage();
-
