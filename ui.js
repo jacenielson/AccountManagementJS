@@ -4,14 +4,16 @@ console.log("running js");
 
 const setUserInQueryString = () => {
   const user = GetCurrentUser();
-  const url = new URL(window.location);
-  url.searchParams.set("name", user);
-  history.pushState(null, "", url);
+//   const url = new URL(window.location);
+//   url.searchParams.set("name", user);
+//   history.pushState(null, "", url);
+localStorage.setItem("name", user);
 };
 
 const loginUserFromQueryString = () => {
-    const url = new URL(window.location);
-    const currentUser = url.searchParams.get("name") ?? "";
+    // const url = new URL(window.location);
+    // const currentUser = url.searchParams.get("name") ?? "";
+    const currentUser = localStorage.getItem("name") || "";
     SetCurrentUser(currentUser);
 }
 
